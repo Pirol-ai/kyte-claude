@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "kyte": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/server/kyte.cjs"],
+      "env": {
+        "KYTE_EXT_READ_ONLY": "${user_config.read_only}",
+        "KYTE_EXT_DB_DIR": "${user_config.data_folder}",
+        "KYTE_EXT_BIN": "${user_config.kyte_path}"
+      }
+    }
+  }
+}

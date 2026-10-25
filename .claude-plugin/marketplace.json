@@ -1,0 +1,15 @@
+{
+  "name": "kyte-claude",
+  "description": "The kyte plugin for Claude, by Pirol Labs.",
+  "owner": {
+    "name": "Pirol Labs",
+    "url": "https://pirol.ai"
+  },
+  "plugins": [
+    {
+      "name": "kyte",
+      "source": "./",
+      "description": "Your company's kyte workspace in Claude: customers, projects, hours, invoices, goals, people and documents — read and changed as you."
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "name": "kyte",
+  "displayName": "kyte",
+  "version": "0.1.0",
+  "description": "Your company's kyte workspace in Claude: customers, contacts, deals, projects, hours, invoices, goals, people and documents — read and changed as you, with your permissions.",
+  "author": {
+    "name": "Pirol Labs",
+    "url": "https://pirol.ai"
+  },
+  "homepage": "https://pirol.ai",
+  "repository": "https://github.com/Pirol-ai/kyte-claude",
+  "license": "MIT",
+  "keywords": ["kyte", "company os", "crm", "erp", "projects", "time tracking"],
+  "icon": "./icon.png",
+  "supportUrl": "https://github.com/Pirol-ai/kyte-claude/issues",
+  "userConfig": {
+    "read_only": {
+      "type": "boolean",
+      "title": "Read only",
+      "description": "Claude may read the workspace but not create, change or delete anything.",
+      "default": false
+    },
+    "data_folder": {
+      "type": "directory",
+      "title": "Data folder",
+      "description": "Where this connection keeps its copy of the workspace — its own folder, so Claude never competes with a kyte session in a terminal. Sign in for it once: kyte login --db <this folder>.",
+      "default": "~/.kyte/claude"
+    },
+    "kyte_path": {
+      "type": "file",
+      "title": "kyte program (optional)",
+      "description": "Only if kyte is installed somewhere unusual. Left empty, the plugin finds it where the kyte installer puts it.",
+      "default": ""
+    }
+  }
+}
