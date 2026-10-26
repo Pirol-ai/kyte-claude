@@ -37,13 +37,18 @@ Where it works: **Claude Code** and **Cowork** sessions on your computer. Claude
 ## What it runs, sends and stores
 
 - **Runs:** `server/kyte.cjs`, a small launcher (readable source, no dependencies) that finds the installed `kyte` program and starts `kyte mcp`. Without kyte installed it serves a single tool, `kyte_setup`, that explains how to install it.
-- **Sends:** what Claude reads through these tools goes to Claude's model, as with any tool you use in Claude, under Anthropic's terms. kyte itself keeps your workspace in step with **your company's own kyte team server** (where your company runs it). The plugin sends nothing anywhere else.
+- **Sends:** what Claude reads through these tools goes to Claude's model, as with any tool you use in Claude, under Anthropic's terms. kyte itself keeps your workspace in step with **your company's kyte team server**, run by your company itself or by Pirol on its behalf in German data centers. The plugin sends nothing anywhere else.
 - **Stores:** an encrypted local copy of your workspace in the data folder, its key in your operating system's keychain. Every change Claude makes is recorded in kyte as made by an agent on your behalf.
 - **Never:** builds apps or extensions, runs commands, or reads your files — only the data tools of your kyte workspace exist for it.
 
 ## Support
 
 Questions and problems: [github.com/Pirol-ai/kyte-claude/issues](https://github.com/Pirol-ai/kyte-claude/issues).
+
+## Privacy and terms
+
+- Privacy policy: [pirol.ai/privacy](https://pirol.ai/privacy)
+- Terms of service: [pirol.ai/terms](https://pirol.ai/terms)
 
 ## License
 
