@@ -15,6 +15,7 @@
   "supportUrl": "https://github.com/Pirol-ai/kyte-claude/issues",
   "documentationUrl": "https://kyte.pirol.ai/docs/",
   "privacyPolicyUrl": "https://pirol.ai/privacy",
+  "termsOfServiceUrl": "https://pirol.ai/terms",
   "userConfig": {
     "read_only": {
       "type": "boolean",
