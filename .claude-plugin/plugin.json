@@ -13,6 +13,8 @@
   "keywords": ["kyte", "company os", "crm", "erp", "projects", "time tracking"],
   "icon": "./icon.png",
   "supportUrl": "https://github.com/Pirol-ai/kyte-claude/issues",
+  "documentationUrl": "https://kyte.pirol.ai/docs/",
+  "privacyPolicyUrl": "https://pirol.ai/privacy",
   "userConfig": {
     "read_only": {
       "type": "boolean",
