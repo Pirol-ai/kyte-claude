@@ -123,7 +123,7 @@ test("kyte is started with a named environment, not with everything the person h
   const passed = childEnv({
     HOME: "/Users/someone",
     PATH: "/usr/bin",
-    HTTPS_PROXY: "http://proxy:3128",
+    HTTPS_PROXY: "whatever this network needs",
     // whatever else the person keeps in their shell — the ones kyte would take a sign-in from
     // included — stays in this process, because the list above is the only way through
     SOMETHING_THE_PERSON_SET: "for another program entirely",
@@ -133,7 +133,7 @@ test("kyte is started with a named environment, not with everything the person h
   assert.deepEqual(passed, {
     HOME: "/Users/someone",
     PATH: "/usr/bin",
-    HTTPS_PROXY: "http://proxy:3128",
+    HTTPS_PROXY: "whatever this network needs",
   });
 });
 
