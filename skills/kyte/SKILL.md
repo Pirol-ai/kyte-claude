@@ -29,4 +29,9 @@ Apps, extensions and new data structures are built in kyte itself (its Extend mo
 
 ## When kyte cannot answer
 
-If the only tool is `kyte_setup`, or a tool says kyte cannot answer right now, call it (or read its message) and tell the person exactly what it says — usually: install the kyte command line, sign in once with `kyte login --db <data folder>`, then restart Claude.
+Two tools stand in for the workspace when it cannot be reached, and both carry their own instructions:
+
+- `kyte_setup` — the plugin found no kyte to start.
+- `kyte_status` — kyte is there but cannot answer, usually because nobody has signed in on this computer yet.
+
+If one of them is the only tool, call it and tell the person exactly what it says — usually: install the kyte command line, sign in once with `kyte login --db <data folder>`, then restart Claude. Do not answer questions about their company from memory while it is the only tool.

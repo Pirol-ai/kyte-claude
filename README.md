@@ -4,12 +4,12 @@ The kyte plugin connects Claude to your company's **kyte** workspace — the com
 
 ## What you need
 
-The plugin starts the **kyte command line** on your computer, which has to be installed and signed in once:
+**Node.js 18 or newer** on your `PATH` — the plugin's own launcher runs on it. kyte itself brings everything it needs in one binary; this one small file is the exception.
+
+Then the **kyte command line**, installed and signed in once:
 
 1. Install it — macOS / Linux: `curl -fsSL https://updates.pirol.ai/cli/install.sh | sh` · Windows: `irm https://updates.pirol.ai/cli/install.ps1 | iex`
-2. Sign in for the plugin's data folder (the **Data folder** setting, `~/.kyte/claude` unless you change it): `kyte login --db ~/.kyte/claude`
-
-The plugin's local server needs **Node.js 18 or newer** on your `PATH`.
+2. Sign in for the plugin's data folder (the **Data folder** setting, `~/.kyte/claude` unless you change it): `~/.local/bin/kyte login --db ~/.kyte/claude` (Windows: `%LOCALAPPDATA%\Programs\kyte\kyte.exe login --db ~/.kyte/claude`) — the full path, because the installer's folder is not always on your `PATH` yet. Once it is, plain `kyte login …` works.
 
 ## Install
 
@@ -36,7 +36,7 @@ Where it works: **Claude Code** and **Cowork** sessions on your computer. Claude
 
 ## What it runs, sends and stores
 
-- **Runs:** `server/kyte.cjs`, a small launcher (readable source, no dependencies) that finds the installed `kyte` program and starts `kyte mcp`. Without kyte installed it serves a single tool, `kyte_setup`, that explains how to install it.
+- **Runs:** `server/kyte.cjs`, a small launcher (readable source, no dependencies, checked by `node --test server/*.test.cjs`) that finds the installed `kyte` program and starts `kyte mcp`. Without kyte installed it serves a single tool, `kyte_setup`, that explains how to install it.
 - **Sends:** what Claude reads through these tools goes to Claude's model, as with any tool you use in Claude, under Anthropic's terms. kyte itself keeps your workspace in step with **your company's kyte team server**, run by your company itself or by Pirol on its behalf in German data centers. The plugin sends nothing anywhere else.
 - **Stores:** an encrypted local copy of your workspace in the data folder, its key in your operating system's keychain. Every change Claude makes is recorded in kyte as made by an agent on your behalf.
 - **Never:** builds apps or extensions, runs commands, or reads your files — only the data tools of your kyte workspace exist for it.
