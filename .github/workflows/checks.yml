@@ -1,0 +1,49 @@
+# What has to hold before a change reaches anyone's machine.
+#
+# This plugin is installed on other people's computers, where a broken manifest reads as
+# "server disconnected" and a broken launcher as kyte being unreachable — neither of which says
+# what went wrong. So both checks run on every pull request, including one from a fork: they are
+# local checks, nothing talks to a model, and no secret is involved.
+name: checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: tests (node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # The README promises "Node.js 18 or newer". 18 is here so that promise is checked rather
+        # than assumed; 22 is what most people actually have.
+        node: ["18", "22"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      # the launcher's contract: the setup text, what the two settings become as arguments,
+      # and the answers the fallback server gives while kyte is missing
+      # the pattern, not the folder: Node 22 reads a bare directory here as a module entry
+      # point and dies with MODULE_NOT_FOUND, while 18 and 26 glob it
+      - run: node --test server/*.test.cjs
+
+  manifests:
+    name: manifests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm install -g @anthropic-ai/claude-code
+      # the plugin manifest, the marketplace entry and the skill, as the plugin directory reads
+      # them — it exits non-zero on a finding, which is the whole point of running it here
+      - run: claude plugin validate .
