@@ -85,9 +85,23 @@ function kyteArgs(env = process.env) {
   return args;
 }
 
+/**
+ * Where the installers write kyte. The sign-in step is named with this absolute path on purpose:
+ * the installer's own folder is often not on the PATH yet — it says so itself — and a bare
+ * `kyte login` then answers "command not found" to someone who did everything right.
+ */
+function installTarget(env = process.env, platform = process.platform, home = os.homedir()) {
+  const named = setting(env.KYTE_INSTALL_DIR);
+  if (platform === "win32") {
+    const dir = named || path.win32.join(env.LOCALAPPDATA || "%LOCALAPPDATA%", "Programs", "kyte");
+    return path.win32.join(dir, "kyte.exe");
+  }
+  return path.posix.join(named || path.posix.join(home, ".local", "bin"), "kyte");
+}
+
 /** What to do when kyte is missing — in the words the person needs, for their system. */
-function setupText(env = process.env, platform = process.platform) {
-  const dbDir = expandHome(setting(env.KYTE_EXT_DB_DIR));
+function setupText(env = process.env, platform = process.platform, home = os.homedir()) {
+  const dbDir = expandHome(setting(env.KYTE_EXT_DB_DIR), home);
   const named = setting(env.KYTE_EXT_BIN);
   return [
     named
@@ -96,8 +110,8 @@ function setupText(env = process.env, platform = process.platform) {
     "",
     "1. Install it:",
     `   ${platform === "win32" ? INSTALL.win32 : INSTALL.posix}`,
-    "2. Sign in once:",
-    `   kyte login${dbDir ? ` --db ${dbDir}` : ""}`,
+    "2. Sign in once — the full path, because the installer's folder may not be on your PATH yet:",
+    `   ${installTarget(env, platform, home)} login${dbDir ? ` --db ${dbDir}` : ""}`,
     "3. Restart Claude (or reconnect the kyte server with /mcp in Claude Code).",
   ].join("\n");
 }
@@ -168,6 +182,15 @@ function main() {
   child.on("exit", (code, signal) => process.exit(signal ? 1 : (code ?? 0)));
 }
 
-module.exports = { candidates, expandHome, fallbackAnswer, findKyte, kyteArgs, setting, setupText };
+module.exports = {
+  candidates,
+  expandHome,
+  fallbackAnswer,
+  findKyte,
+  installTarget,
+  kyteArgs,
+  setting,
+  setupText,
+};
 
 if (require.main === module) main();
