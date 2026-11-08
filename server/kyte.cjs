@@ -226,6 +226,7 @@ function main() {
 }
 
 module.exports = {
+  INSTALL,
   candidates,
   childEnv,
   expandHome,

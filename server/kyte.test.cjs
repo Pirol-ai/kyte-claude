@@ -14,6 +14,7 @@ const { readFileSync } = require("node:fs");
 const path = require("node:path");
 
 const {
+  INSTALL,
   childEnv,
   expandHome,
   fallbackAnswer,
@@ -68,7 +69,7 @@ test("the sign-in step names the installer's absolute path", () => {
 
 test("the setup text can be pasted as it stands", () => {
   const text = setupText({ CLAUDE_PLUGIN_OPTION_DATA_FOLDER: "~/.kyte/claude" }, "darwin", HOME);
-  assert.match(text, /curl -fsSL/);
+  assert.ok(text.includes(INSTALL.posix));
   assert.ok(text.includes(`${HOME}/.local/bin/kyte login --db ${HOME}/.kyte/claude`));
   // the trap this guards: a bare command in a shell whose PATH lacks the installer's folder
   assert.doesNotMatch(text, /^\s*kyte login/m);
@@ -83,15 +84,15 @@ test("a kyte named in the settings but missing is said so, by path", () => {
 
 test("the windows text uses the windows installer and executable", () => {
   const text = setupText({ LOCALAPPDATA: "C:\\L" }, "win32", HOME);
-  assert.ok(text.includes("irm https://updates.pirol.ai/cli/install.ps1 | iex"));
+  assert.ok(text.includes(INSTALL.win32));
   assert.ok(text.includes("C:\\L\\Programs\\kyte\\kyte.exe login"));
 });
 
 /**
- * The settings only work if the manifest and this launcher spell the options alike, so the test
- * takes the names from the manifest rather than repeating them. It reads `.mcp.json` and nothing
- * else: `plugin.json` names the plugin's icon, and a file that a test reaches an image through is
- * held for review by the plugin directory.
+ * The settings only work if the server manifest and this launcher spell the options alike, so the
+ * test takes the names from that manifest rather than repeating them. It reads `.mcp.json` and
+ * nothing else: the plugin manifest beside it names the listing's image, and a plugin whose test
+ * reaches an image through a manifest is held for review by the plugin directory.
  */
 test("the option names in .mcp.json are the ones the launcher reads", () => {
   const file = path.join(__dirname, "..", ".mcp.json");
@@ -99,20 +100,20 @@ test("the option names in .mcp.json are the ones the launcher reads", () => {
 
   // each variable is CLAUDE_PLUGIN_OPTION_ plus an option's name in capitals, and its value is
   // nothing but a reference to that option — the only shape the plugin directory accepts
-  const option = {};
+  const options = {};
   for (const [name, value] of Object.entries(declared)) {
-    const key = /^\$\{user_config\.([a-z0-9_]+)\}$/.exec(value)?.[1];
-    assert.ok(key, `${name} is set to ${value}, not to one option of this plugin`);
-    assert.equal(name, `CLAUDE_PLUGIN_OPTION_${key.toUpperCase()}`);
-    option[key] = name;
+    const option = /^\$\{user_config\.([a-z0-9_]+)\}$/.exec(value)?.[1];
+    assert.ok(option, `${name} is set to ${value}, not to one option of this plugin`);
+    assert.equal(name, `CLAUDE_PLUGIN_OPTION_${option.toUpperCase()}`);
+    options[option] = name;
   }
-  assert.deepEqual(Object.keys(option).sort(), ["data_folder", "kyte_path", "read_only"]);
+  assert.deepEqual(Object.keys(options).sort(), ["data_folder", "kyte_path", "read_only"]);
 
   // and the launcher answers to exactly those names, as the manifest writes them
   const env = {
-    [option.data_folder]: "~/.kyte/claude",
-    [option.read_only]: "true",
-    [option.kyte_path]: "/opt/kyte",
+    [options.data_folder]: "~/.kyte/claude",
+    [options.read_only]: "true",
+    [options.kyte_path]: "/opt/kyte",
   };
   assert.deepEqual(kyteArgs(env), ["mcp", "--db", expandHome("~/.kyte/claude"), "--read-only"]);
   assert.equal(findKyte(env, "darwin", HOME, (f) => f === "/opt/kyte"), "/opt/kyte");
