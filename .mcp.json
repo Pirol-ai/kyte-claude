@@ -4,9 +4,9 @@
       "command": "node",
       "args": ["${CLAUDE_PLUGIN_ROOT}/server/kyte.cjs"],
       "env": {
-        "KYTE_EXT_READ_ONLY": "${user_config.read_only}",
-        "KYTE_EXT_DB_DIR": "${user_config.data_folder}",
-        "KYTE_EXT_BIN": "${user_config.kyte_path}"
+        "CLAUDE_PLUGIN_OPTION_READ_ONLY": "${user_config.read_only}",
+        "CLAUDE_PLUGIN_OPTION_DATA_FOLDER": "${user_config.data_folder}",
+        "CLAUDE_PLUGIN_OPTION_KYTE_PATH": "${user_config.kyte_path}"
       }
     }
   }

@@ -27,6 +27,49 @@ const INSTALL = {
   win32: "irm https://updates.pirol.ai/cli/install.ps1 | iex",
 };
 
+/**
+ * The plugin's three settings reach this file as environment variables, under the names the plugin
+ * directory accepts: CLAUDE_PLUGIN_OPTION_ and the userConfig key in capitals. `.mcp.json` sets
+ * them, Claude substitutes the person's values, and nothing else may ride along (see `childEnv`).
+ */
+const OPTION = {
+  readOnly: "CLAUDE_PLUGIN_OPTION_READ_ONLY",
+  dataFolder: "CLAUDE_PLUGIN_OPTION_DATA_FOLDER",
+  kytePath: "CLAUDE_PLUGIN_OPTION_KYTE_PATH",
+};
+
+/**
+ * What kyte is started with. The whole environment is not ours to pass on: kyte reads
+ * $PIROL_API_KEY when it is set, so inheriting everything means forwarding a key the person put in
+ * their shell for something else — to a program that talks to a server. The plugin's own way in is
+ * `kyte login`. So kyte gets what any program needs to find the person's files and reach the
+ * network, by name, and the rest of this process's environment stays here.
+ */
+const PASS_THROUGH = new Set([
+  // the person and their files
+  "HOME", "USERPROFILE", "USER", "USERNAME", "LOGNAME", "SHELL",
+  // where a program may write while it works
+  "TMPDIR", "TEMP", "TMP",
+  // windows cannot resolve a name or open a socket without these
+  "APPDATA", "LOCALAPPDATA", "PROGRAMDATA", "SYSTEMDRIVE", "SYSTEMROOT", "WINDIR",
+  "COMSPEC", "PATHEXT",
+  // what it may start, and in which language it answers
+  "PATH", "LANG", "LC_ALL", "LC_CTYPE", "TERM",
+  // how this network reaches the internet, and which certificates it trusts
+  "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "NO_PROXY", "REQUESTS_CA_BUNDLE",
+  "SSL_CERT_FILE", "SSL_CERT_DIR", "NODE_EXTRA_CA_CERTS",
+]);
+
+/** The named environment itself. Windows spells its variables as it likes, so the name is matched
+ * without case and handed on as the person's system spelled it. */
+function childEnv(env = process.env) {
+  const passed = {};
+  for (const [name, value] of Object.entries(env)) {
+    if (value !== undefined && PASS_THROUGH.has(name.toUpperCase())) passed[name] = value;
+  }
+  return passed;
+}
+
 /** A value Claude substituted — or the literal placeholder it leaves for an empty field. */
 function setting(value) {
   const text = (value ?? "").trim();
@@ -71,7 +114,7 @@ function findKyte(
   home = os.homedir(),
   ok = runnable,
 ) {
-  const named = setting(env.KYTE_EXT_BIN);
+  const named = setting(env[OPTION.kytePath]);
   if (named) return ok(named) ? named : null;
   return candidates(env, platform, home).find(ok) ?? null;
 }
@@ -79,9 +122,9 @@ function findKyte(
 /** `kyte mcp` with the plugin's two settings: which data folder, and whether it may write. */
 function kyteArgs(env = process.env) {
   const args = ["mcp"];
-  const dbDir = expandHome(setting(env.KYTE_EXT_DB_DIR));
+  const dbDir = expandHome(setting(env[OPTION.dataFolder]));
   if (dbDir) args.push("--db", dbDir);
-  if (setting(env.KYTE_EXT_READ_ONLY) === "true") args.push("--read-only");
+  if (setting(env[OPTION.readOnly]) === "true") args.push("--read-only");
   return args;
 }
 
@@ -101,8 +144,8 @@ function installTarget(env = process.env, platform = process.platform, home = os
 
 /** What to do when kyte is missing — in the words the person needs, for their system. */
 function setupText(env = process.env, platform = process.platform, home = os.homedir()) {
-  const dbDir = expandHome(setting(env.KYTE_EXT_DB_DIR), home);
-  const named = setting(env.KYTE_EXT_BIN);
+  const dbDir = expandHome(setting(env[OPTION.dataFolder]), home);
+  const named = setting(env[OPTION.kytePath]);
   return [
     named
       ? `kyte is not at ${named}, the path set in this plugin's settings.`
@@ -173,7 +216,7 @@ function main() {
   const kyte = findKyte();
   if (!kyte) return serveFallback(setupText());
   // stdio straight through: the conversation is between Claude and kyte, not this file
-  const child = spawn(kyte, kyteArgs(), { stdio: "inherit" });
+  const child = spawn(kyte, kyteArgs(), { stdio: "inherit", env: childEnv() });
   for (const signal of ["SIGINT", "SIGTERM"]) process.on(signal, () => child.kill(signal));
   child.on("error", (error) => {
     console.error(`kyte plugin: could not start ${kyte}: ${error.message}`);
@@ -184,6 +227,7 @@ function main() {
 
 module.exports = {
   candidates,
+  childEnv,
   expandHome,
   fallbackAnswer,
   findKyte,
