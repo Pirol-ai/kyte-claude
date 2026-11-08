@@ -1,7 +1,7 @@
 {
   "name": "kyte",
   "displayName": "kyte",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Your company's kyte workspace in Claude: customers, contacts, deals, projects, hours, invoices, goals, people and documents — read and changed as you, with your permissions. Needs the kyte command line on this computer (one installer) and Node 18 or newer.",
   "author": {
     "name": "Pirol Labs",
