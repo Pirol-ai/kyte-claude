@@ -31,7 +31,9 @@ jobs:
           node-version: ${{ matrix.node }}
       # the launcher's contract: the setup text, what the two settings become as arguments,
       # and the answers the fallback server gives while kyte is missing
-      - run: node --test server/
+      # the pattern, not the folder: Node 22 reads a bare directory here as a module entry
+      # point and dies with MODULE_NOT_FOUND, while 18 and 26 glob it
+      - run: node --test server/*.test.cjs
 
   manifests:
     name: manifests
