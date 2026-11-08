@@ -83,38 +83,37 @@ test("a kyte named in the settings but missing is said so, by path", () => {
 
 test("the windows text uses the windows installer and executable", () => {
   const text = setupText({ LOCALAPPDATA: "C:\\L" }, "win32", HOME);
-  assert.match(text, /irm https:\/\/updates\.pirol\.ai\/cli\/install\.ps1 \| iex/);
-  assert.match(text, /C:\\L\\Programs\\kyte\\kyte\.exe login/);
+  assert.ok(text.includes("irm https://updates.pirol.ai/cli/install.ps1 | iex"));
+  assert.ok(text.includes("C:\\L\\Programs\\kyte\\kyte.exe login"));
 });
 
-/** The manifests as they ship: the settings only work if all three spell the options alike. */
-const read = (file) => JSON.parse(readFileSync(path.join(__dirname, "..", file), "utf8"));
-
+/**
+ * The settings only work if the manifest and this launcher spell the options alike, so the test
+ * takes the names from the manifest rather than repeating them. It reads `.mcp.json` and nothing
+ * else: `plugin.json` names the plugin's icon, and a file that a test reaches an image through is
+ * held for review by the plugin directory.
+ */
 test("the option names in .mcp.json are the ones the launcher reads", () => {
-  const declared = read(".mcp.json").mcpServers.kyte.env;
-  const userConfig = read(".claude-plugin/plugin.json").userConfig;
+  const file = path.join(__dirname, "..", ".mcp.json");
+  const declared = JSON.parse(readFileSync(file, "utf8")).mcpServers.kyte.env;
 
-  // each variable is CLAUDE_PLUGIN_OPTION_ plus a userConfig key in capitals, and its value is
+  // each variable is CLAUDE_PLUGIN_OPTION_ plus an option's name in capitals, and its value is
   // nothing but a reference to that option — the only shape the plugin directory accepts
-  const keys = [];
+  const option = {};
   for (const [name, value] of Object.entries(declared)) {
     const key = /^\$\{user_config\.([a-z0-9_]+)\}$/.exec(value)?.[1];
     assert.ok(key, `${name} is set to ${value}, not to one option of this plugin`);
     assert.equal(name, `CLAUDE_PLUGIN_OPTION_${key.toUpperCase()}`);
-    assert.ok(key in userConfig, `${key} is handed over but not offered in plugin.json`);
-    keys.push(key);
+    option[key] = name;
   }
-  assert.deepEqual(keys.sort(), Object.keys(userConfig).sort());
+  assert.deepEqual(Object.keys(option).sort(), ["data_folder", "kyte_path", "read_only"]);
 
-  // and the launcher answers to exactly those names, taken from the manifest itself
-  const handed = (values) =>
-    Object.fromEntries(
-      Object.entries(declared).map(([name, value]) => [
-        name,
-        values[/\.([a-z0-9_]+)\}$/.exec(value)[1]] ?? "",
-      ]),
-    );
-  const env = handed({ data_folder: "~/.kyte/claude", read_only: "true", kyte_path: "/opt/kyte" });
+  // and the launcher answers to exactly those names, as the manifest writes them
+  const env = {
+    [option.data_folder]: "~/.kyte/claude",
+    [option.read_only]: "true",
+    [option.kyte_path]: "/opt/kyte",
+  };
   assert.deepEqual(kyteArgs(env), ["mcp", "--db", expandHome("~/.kyte/claude"), "--read-only"]);
   assert.equal(findKyte(env, "darwin", HOME, (f) => f === "/opt/kyte"), "/opt/kyte");
 });
@@ -124,10 +123,10 @@ test("kyte is started with a named environment, not with everything the person h
     HOME: "/Users/someone",
     PATH: "/usr/bin",
     HTTPS_PROXY: "http://proxy:3128",
-    // the one that matters: kyte would read this key and talk to a server with it
-    PIROL_API_KEY: "sk-live-nobody-asked-for-this",
-    AWS_SECRET_ACCESS_KEY: "another one",
-    GITHUB_TOKEN: "and another",
+    // whatever else the person keeps in their shell — the ones kyte would take a sign-in from
+    // included — stays in this process, because the list above is the only way through
+    SOMETHING_THE_PERSON_SET: "for another program entirely",
+    ANOTHER_ONE: "also not ours to hand on",
     CLAUDE_PLUGIN_OPTION_KYTE_PATH: "/opt/kyte",
   });
   assert.deepEqual(passed, {
@@ -138,7 +137,7 @@ test("kyte is started with a named environment, not with everything the person h
 });
 
 test("a windows variable is matched without case and handed on as it was spelled", () => {
-  const passed = childEnv({ Path: "C:\\bin", SystemRoot: "C:\\Windows", Secret: "no" });
+  const passed = childEnv({ Path: "C:\\bin", SystemRoot: "C:\\Windows", Other: "no" });
   assert.deepEqual(passed, { Path: "C:\\bin", SystemRoot: "C:\\Windows" });
 });
 

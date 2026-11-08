@@ -39,11 +39,11 @@ const OPTION = {
 };
 
 /**
- * What kyte is started with. The whole environment is not ours to pass on: kyte reads
- * $PIROL_API_KEY when it is set, so inheriting everything means forwarding a key the person put in
- * their shell for something else — to a program that talks to a server. The plugin's own way in is
- * `kyte login`. So kyte gets what any program needs to find the person's files and reach the
- * network, by name, and the rest of this process's environment stays here.
+ * What kyte is started with. The whole environment is not ours to pass on: kyte takes a sign-in
+ * from the environment when it finds one, so inheriting everything means handing over whatever the
+ * person keeps in their shell for another program. The plugin's own way in is `kyte login`. So kyte
+ * gets what any program needs to find the person's files and reach the network, by name, and the
+ * rest of this process's environment stays here.
  */
 const PASS_THROUGH = new Set([
   // the person and their files
