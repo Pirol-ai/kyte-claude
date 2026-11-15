@@ -22,6 +22,19 @@ In Claude Code:
 
 In the Claude app: **Customize → Plugins → Add → Add marketplace**, enter `Pirol-ai/kyte-claude`, then add **kyte**.
 
+### Two versions live here
+
+| | Where | What it does |
+| --- | --- | --- |
+| This repository's root | `/plugin marketplace add Pirol-ai/kyte-claude` | Starts `kyte mcp` for you. Install kyte, sign in, done — the plugin finds the program and runs it. |
+| [`plugins/kyte`](plugins/kyte) | Claude's plugin directory | Text only: the same skill, plus the three steps to register `kyte mcp` yourself. Starts nothing. |
+
+The directory accepts plugins that start a program on the user's computer only from Verified
+organizations, which is granted by Anthropic and cannot be applied for. So the plugin that starts
+kyte is distributed here, from GitHub, and the directory carries the version that only explains —
+one skill, a readme, a licence and an icon. Install one of them, not both: they share the name
+`kyte`.
+
 ## Use it
 
 Ask in plain words: *"Which projects for Meyer GmbH still have unbilled hours?"*, *"Book three hours on the Northwind implementation for today"*, *"Who is out next week?"*. Claude looks things up with the kyte tools before it answers, asks before it changes anything (your Claude app asks you to allow each tool that writes), and says afterwards what it changed.

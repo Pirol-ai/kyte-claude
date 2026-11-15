@@ -33,7 +33,9 @@ jobs:
       # and the answers the fallback server gives while kyte is missing
       # the pattern, not the folder: Node 22 reads a bare directory here as a module entry
       # point and dies with MODULE_NOT_FOUND, while 18 and 26 glob it
-      - run: node --test server/*.test.cjs
+      # tests/ holds the checks on the text-only version in plugins/kyte — what the directory
+      # accepts there is a property of the files, so it is checked here, not days later by a scan
+      - run: node --test server/*.test.cjs tests/*.test.cjs
 
   manifests:
     name: manifests
@@ -47,3 +49,6 @@ jobs:
       # the plugin manifest, the marketplace entry and the skill, as the plugin directory reads
       # them — it exits non-zero on a finding, which is the whole point of running it here
       - run: claude plugin validate .
+      # the directory version in plugins/kyte, against the directory's own profile: it is
+      # submitted there, so a warning is a finding, not a note
+      - run: claude plugin validate plugins/kyte --profile directory --strict
