@@ -52,3 +52,18 @@ jobs:
       # the directory version in plugins/kyte, against the directory's own profile: it is
       # submitted there, so a warning is a finding, not a note
       - run: claude plugin validate plugins/kyte --profile directory --strict
+
+  offered:
+    name: offered to the model
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm install -g @anthropic-ai/claude-code
+      # The whole path, including the step that reads what Claude puts in front of the model.
+      # It runs here because it needs nothing but claude and node: the endpoint it answers into
+      # is local, so there is no account and no secret, and without kyte on the runner the
+      # launcher's own server answers — which is the case a newcomer meets first.
+      - run: sh check.sh
