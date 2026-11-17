@@ -54,6 +54,22 @@ Where it works: **Claude Code** and **Cowork** sessions on your computer. Claude
 - **Stores:** an encrypted local copy of your workspace in the data folder, its key in your operating system's keychain. Every change Claude makes is recorded in kyte as made by an agent on your behalf.
 - **Never:** builds apps or extensions, runs commands, or reads your files — only the data tools of your kyte workspace exist for it.
 
+## Checking it
+
+`sh check.sh` walks the whole path in a throwaway `CLAUDE_CONFIG_DIR` and a throwaway `HOME`, so
+neither your Claude nor your workspace is touched: the local tests, both manifests, the
+marketplace, the install, what the plugin brought — and finally what Claude puts in front of the
+model.
+
+That last step matters on its own. A plugin can install cleanly, serve every tool, and still show
+the model neither the skill nor the server; that is what happened to the same skill in Hermes,
+where it stayed listed as enabled the whole time. The step asks Claude by standing a throwaway
+endpoint in front of it and reading the request, so no model answers, no account is used and no
+tokens are spent.
+
+It needs `claude` and `node`. kyte itself is optional: without it the launcher's own server
+answers, which is a case worth checking too.
+
 ## Support
 
 Questions and problems: [github.com/Pirol-ai/kyte-claude/issues](https://github.com/Pirol-ai/kyte-claude/issues).
