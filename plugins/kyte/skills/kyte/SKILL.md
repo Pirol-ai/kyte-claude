@@ -28,19 +28,15 @@ They are named after the records they serve — `crm_organizations_list`, `proje
 The person runs the first two themselves: the first writes a program onto their computer, the
 second opens their browser to sign in. Walk them through it; do not run them for them.
 
-1. **Install the kyte command line.** On macOS and Linux:
+1. **Install the kyte command line.** `kyte --version` says whether it is already there. If it
+   answers nothing, send the person to <https://kyte.pirol.ai/docs/en/mcp/>: the installer for
+   macOS, Linux and Windows is there, with what it does and where it puts the program. Do not
+   write an install command yourself — the page is the one place it is kept up to date, and it
+   is the person's own decision what to run on their machine.
 
-   ```
-   curl -fsSL https://updates.pirol.ai/cli/install.sh | sh
-   ```
-
-   On Windows, in PowerShell:
-
-   ```
-   irm https://updates.pirol.ai/cli/install.ps1 | iex
-   ```
-
-   `kyte --version` says whether it is already there.
+   It writes one program, usually to `~/.local/bin/kyte` — a folder that is not always on the
+   `PATH` yet, which is why a bare `kyte` can still answer "command not found" to someone who
+   did everything right.
 
 2. **Sign in once, for the folder this connection will use.**
 
