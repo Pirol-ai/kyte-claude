@@ -1,7 +1,7 @@
 {
   "name": "kyte",
   "displayName": "kyte",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Work with your company's kyte workspace in Claude — customers, contacts, deals, projects, hours, invoices, goals, people and documents. This plugin is the knowledge: how to connect the workspace once, and how to work in it afterwards. The connection itself runs on your own computer.",
   "author": {
     "name": "Pirol Labs",

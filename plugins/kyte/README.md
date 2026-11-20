@@ -21,7 +21,7 @@ sign in to once. Installing this plugin alone gives Claude the knowledge, not th
 Three steps, once per computer. Claude will walk you through them when you ask it something about
 your company and finds no kyte tools — or do them yourself:
 
-1. Install the kyte command line — macOS and Linux: `curl -fsSL https://updates.pirol.ai/cli/install.sh | sh` · Windows: `irm https://updates.pirol.ai/cli/install.ps1 | iex`
+1. Install the kyte command line — one installer, for macOS, Linux and Windows. It is on [kyte.pirol.ai/docs/en/mcp/](https://kyte.pirol.ai/docs/en/mcp/), together with what it does and where it puts the program. `kyte --version` says whether it is already there.
 2. Sign in once, for this connection's own folder: `kyte login --db ~/.kyte/claude`
 3. Register it with Claude Code: `claude mcp add kyte -- kyte mcp --db ~/.kyte/claude` — add `--read-only` to let Claude read but never change anything.
 

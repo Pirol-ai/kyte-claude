@@ -75,6 +75,27 @@ test("nothing in the folder starts a server or a program", () => {
   assert.strictEqual(manifest.hooks, undefined);
 });
 
+// The directory's scan calls this RUNTIME_FETCH_EXEC and says a version carrying one "can be held
+// or refused … remove the command, even from documentation". It found two here on 2026-11-15, in
+// the readme and in the skill, and the submission sat in the scan stage for days. The command
+// belongs on our documentation page, which the text points at instead: that page is also the one
+// place it stays current, and what to run on their own machine is the person's decision.
+test("nothing here tells anyone to download something and run it", () => {
+  const fetchers = /\b(curl|wget|iwr|irm|Invoke-WebRequest|Invoke-RestMethod)\b/i;
+  const runners = /\|\s*(ba|z|fi)?sh\b|\|\s*iex\b|\|\s*Invoke-Expression\b/i;
+
+  for (const file of filesUnder(PLUGIN)) {
+    if (![".md", ".txt", ".json"].includes(path.extname(file))) continue;
+    const lines = fs.readFileSync(file, "utf8").split("\n");
+    lines.forEach((line, index) => {
+      assert.ok(
+        !(fetchers.test(line) && runners.test(line)),
+        `${relative(file)}:${index + 1} downloads code and runs it: ${line.trim()}`,
+      );
+    });
+  }
+});
+
 test("the readme and the skill send the person to the same folder", () => {
   const readme = fs.readFileSync(path.join(PLUGIN, "README.md"), "utf8");
   const skill = fs.readFileSync(path.join(PLUGIN, "skills", "kyte", "SKILL.md"), "utf8");
